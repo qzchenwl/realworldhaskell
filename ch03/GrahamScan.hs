@@ -61,7 +61,7 @@ grahamScan ps = scan [pvt] sortedList
         pvt        = lowestY ps
         scan preResult (a:b:left)
             | direction /= RightTurn = scan (a:preResult) (b:left)
-            | otherwise          = scan (tail preResult) (prePoint:b:left)
+            | otherwise              = scan (tail preResult) (prePoint:b:left)
             where direction = turn prePoint a b
                   prePoint  = head preResult
         scan preResult _    = preResult
