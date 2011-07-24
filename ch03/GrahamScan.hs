@@ -35,7 +35,21 @@ compareByAngle pvt a b
     | otherwise   = distance
     where
         angle = compare 0 (cross pvt a b)
-        distance = compare (dist pvt a) (dist pvt b)
+        distance = if firstSection pvt a
+                   then compare (dist pvt a) (dist pvt b)
+                   else compare (dist pvt b) (dist pvt a)
+                   where
+                        firstSection (Point x1 y1) (Point x2 y2) = (x1 <= x2) && (y1 <= y2)
+{-
+ -              y
+ -              ^
+ -              |
+ -              | first section
+ -              |
+ -          ----+----------------> x
+ -              |
+ -              |
+ -}
 
 lowestY :: [Point] -> Point
 lowestY = minimumBy compareByY
