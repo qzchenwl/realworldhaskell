@@ -1,6 +1,7 @@
 -- file: ch03/GrahamScan.hs
 
 import Data.List
+import Data.Ord
 
 data Point = Point Double Double
              deriving (Eq, Show)
@@ -36,8 +37,8 @@ compareByAngle pvt a b
     where
         angle = compare 0 (cross pvt a b)
         distance = if firstSection pvt a
-                   then compare (dist pvt a) (dist pvt b)
-                   else compare (dist pvt b) (dist pvt a)
+                   then comparing (dist pvt) a b
+                   else comparing (dist pvt) b a
                    where
                         firstSection (Point x1 y1) (Point x2 y2) = (x1 <= x2) && (y1 <= y2)
 {-
@@ -57,7 +58,7 @@ lowestY = minimumBy compareByY
 grahamScan :: [Point] -> [Point]
 grahamScan ps = scan [pvt] sortedList
     where
-        sortedList = (sortBy (compareByAngle pvt) ((delete pvt ps))) ++ [pvt]
+        sortedList = sortBy (compareByAngle pvt) (delete pvt ps) ++ [pvt]
         pvt        = lowestY ps
         scan preResult (a:b:left)
             | direction /= RightTurn = scan (a:preResult) (b:left)
@@ -67,8 +68,8 @@ grahamScan ps = scan [pvt] sortedList
         scan preResult _    = preResult
 
 tupleListToPoints :: [(Double,Double)] -> [Point]
-tupleListToPoints xs = map (\(x, y) -> (Point x y)) xs
+tupleListToPoints = map (uncurry Point)
 
 pointsToTupleList :: [Point] -> [(Double, Double)]
-pointsToTupleList xs = map (\(Point x y) -> (x, y)) xs
+pointsToTupleList = map (\(Point x y) -> (x, y))
 
