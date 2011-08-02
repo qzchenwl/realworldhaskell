@@ -45,7 +45,7 @@ compareByAngle pvt a b
  -              y
  -              ^
  -              |
- -              | first section
+ -              | First Quadrant
  -              |
  -          ----+----------------> x
  -              |
