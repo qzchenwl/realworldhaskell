@@ -3,8 +3,7 @@
 import Data.List
 import Data.Ord
 
-data Point = Point Double Double
-             deriving (Eq, Show)
+type Point = (Double, Double)
 
 data Direction = LeftTurn
                | RightTurn
@@ -12,10 +11,10 @@ data Direction = LeftTurn
                  deriving (Eq, Show)
 
 cross :: Point -> Point -> Point -> Double
-cross (Point x1 y1) (Point x2 y2) (Point x3 y3) = (x2-x1)*(y3-y1) - (x3-x1)*(y2-y1)
+cross (x1, y1) (x2, y2) (x3, y3) = (x2-x1)*(y3-y1) - (x3-x1)*(y2-y1)
 
 dist :: Point -> Point -> Double
-dist (Point x1 y1) (Point x2 y2) = sqrt((x1-x2)^2+(y1-y2)^2)
+dist (x1, y1) (x2, y2) = sqrt((x1-x2)^2+(y1-y2)^2)
 
 turn :: Point -> Point -> Point -> Direction
 turn pvt a b
@@ -26,7 +25,7 @@ turn pvt a b
         crossProduct = cross pvt a b
 
 compareByY :: Point -> Point -> Ordering
-compareByY (Point x1 y1) (Point x2 y2)
+compareByY (x1, y1) (x2, y2)
     | y1 /= y2  = compare y1 y2
     | otherwise = compare x1 y1
 
@@ -36,11 +35,11 @@ compareByAngle pvt a b
     | otherwise   = distance
     where
         angle = compare 0 (cross pvt a b)
-        distance = if firstSection pvt a
+        distance = if firstQuadrant pvt a
                    then comparing (dist pvt) a b
                    else comparing (dist pvt) b a
                    where
-                        firstSection (Point x1 y1) (Point x2 y2) = (x1 <= x2) && (y1 <= y2)
+                        firstQuadrant (x1, y1) (x2, y2) = (x1 <= x2) && (y1 <= y2)
 {-
  -              y
  -              ^
@@ -56,6 +55,7 @@ lowestY :: [Point] -> Point
 lowestY = minimumBy compareByY
 
 grahamScan :: [Point] -> [Point]
+grahamScan [] = []
 grahamScan ps = scan [pvt] sortedList
     where
         sortedList = sortBy (compareByAngle pvt) (delete pvt ps) ++ [pvt]
@@ -66,10 +66,3 @@ grahamScan ps = scan [pvt] sortedList
             where direction = turn prePoint a b
                   prePoint  = head preResult
         scan preResult _    = preResult
-
-tupleListToPoints :: [(Double,Double)] -> [Point]
-tupleListToPoints = map (uncurry Point)
-
-pointsToTupleList :: [Point] -> [(Double, Double)]
-pointsToTupleList = map (\(Point x y) -> (x, y))
-
