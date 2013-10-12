@@ -1,4 +1,5 @@
 -- file: ch10/Parse.hs
+module Parse where
 
 import qualified Data.ByteString.Lazy.Char8 as L8 
 import qualified Data.ByteString.Lazy as L
